@@ -1,0 +1,7 @@
+flask
+spotipy
+lyricsgenius
+sentence-transformers
+torch
+gunicorn
+python-dotenv
