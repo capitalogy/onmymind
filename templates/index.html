@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On My Mind - Semantic Lyric Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="max-w-2xl w-full text-center space-y-6">
+        <h1 class="text-5xl font-extrabold text-indigo-400 tracking-tight">On My Mind</h1>
+        <p class="text-slate-400">Describe a feeling, scene, or concept to discover songs by meaning.</p>
+
+        <div class="flex gap-2">
+            <input type="text" id="query" placeholder="e.g., driving alone on a dark highway" 
+                   class="w-full p-4 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <button onclick="search()" class="bg-indigo-600 hover:bg-indigo-500 font-bold px-6 py-4 rounded-xl transition">Search</button>
+        </div>
+
+        <div id="results" class="space-y-4 text-left"></div>
+    </div>
+
+    <script>
+        async function search() {
+            const query = document.getElementById('query').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p class="text-center text-slate-500">Searching vector space...</p>';
+
+            const response = await fetch('/search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query })
+            });
+            const data = await response.json();
+
+            resultsDiv.innerHTML = '';
+            data.results.forEach(song => {
+                resultsDiv.innerHTML += `
+                    <div class="p-4 bg-slate-800 rounded-xl border border-slate-700">
+                        <div class="flex justify-between items-center mb-1">
+                            <h3 class="text-xl font-bold text-indigo-300">${song.title}</h3>
+                            <span class="text-xs text-slate-400 font-mono">Score: ${song.score}</span>
+                        </div>
+                        <p class="text-sm font-semibold text-slate-300 mb-2">${song.artist}</p>
+                        <p class="text-slate-400 italic">"${song.lyrics}"</p>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
